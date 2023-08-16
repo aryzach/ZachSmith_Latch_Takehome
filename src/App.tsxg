@@ -1,0 +1,77 @@
+import React, { useEffect, useState } from 'react';
+import './App.css';
+
+//const inputData: AgreementData = require('json!./input.json');
+import input from './input';
+
+interface Mark {
+  bold?: boolean;
+  italic?: boolean;
+  // Add other mark properties as needed
+}
+
+interface Child {
+  text: string;
+  marks?: Mark[];
+}
+
+interface Clause {
+  bold?: boolean;
+  type: string;
+  children: Child[];
+}
+
+interface Mention {
+  color: string;
+  type: string;
+  title: string;
+  children: Child[];
+  id: string;
+  value: string;
+}
+
+
+interface AgreementData extends Array<Clause | Mention> {}
+
+const App: React.FC = () => {
+  const [data, setData] = useState<AgreementData>(input);
+
+  useEffect(() => {
+    // Fetch JSON data and set it to the state
+    // Example: fetch('input.json').then(response => response.json()).then((data: AgreementData) => setData(data));
+  }, []);
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="app">
+      <Agreement data={data} />
+    </div>
+  );
+};
+
+const Agreement: React.FC<{ data: AgreementData }> = ({ data }) => {
+  return (
+    <div className="agreement">
+      {data.map((item, index) => (
+        <ClauseComponent key={index} item={item} />
+      ))}
+    </div>
+  );
+};
+
+const ClauseComponent: React.FC<{ item: Clause | Mention }> = ({ item }) => {
+  const { type, children } = item;
+  const renderedChildren = children.map((child, index) => (
+      <span key={index} >
+      {child.text}
+    </span>
+  ));
+
+  return <div className={`clause ${type}`}>{renderedChildren}</div>;
+};
+
+export default App;
+
